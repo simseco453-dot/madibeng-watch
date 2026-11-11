@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Madibeng Water &amp; Power Watch</title>
+<meta name="description" content="Live community reports of water cuts and power outages across Brits, Letlhabile, Hartbeespoort and the rest of Madibeng.">
+<meta name="theme-color" content="#142231">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Power Watch">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta property="og:title" content="Madibeng Water &amp; Power Watch">
+<meta property="og:description" content="Is your water or power off? See which areas are affected and report yours.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <h1>Madibeng Water &amp; Power Watch</h1>
+    <p class="sub">Neighbours reporting water cuts and power outages across Brits, Letlhabile, Hartbeespoort and surrounds. Pick your area and section, say what's happening.</p>
+  </header>
+
+  <aside class="install" id="install" hidden>
+    <div>
+      <strong>Keep it on your home screen</strong>
+      <p id="install-text">Add it once and it opens like an app. No more digging through WhatsApp for the link.</p>
+    </div>
+    <div class="install-actions">
+      <button type="button" class="btn small dark" id="install-btn" hidden>Add to home screen</button>
+      <button type="button" class="btn small" id="install-close">Not now</button>
+    </div>
+  </aside>
+
+  <p class="banner" id="banner" role="status" hidden></p>
+
+  <section class="summary" aria-label="Right now">
+    <div class="tile w"><b id="n-water">–</b><span>places without water</span></div>
+    <div class="tile p"><b id="n-power">–</b><span>places without power</span></div>
+    <div class="tile"><b id="n-reports">–</b><span>reports in last 24 h</span></div>
+  </section>
+
+  <section class="card" aria-labelledby="off-h">
+    <h2 id="off-h">Official notices</h2>
+    <p class="sub tight">Maintenance and outage notices from Madibeng Municipality and Eskom, posted by board moderators with their source. Where a notice and residents disagree on times, trust the notice.</p>
+    <div class="notices" id="notices"></div>
+  </section>
+
+  <section class="card" aria-labelledby="report-h">
+    <h2 id="report-h">Report what's happening</h2>
+    <div class="row2">
+      <div>
+        <label for="area">Area</label>
+        <select id="area"></select>
+      </div>
+      <div id="section-wrap">
+        <label for="section-sel" id="section-label">Section</label>
+        <select id="section-sel" hidden></select>
+        <input type="text" id="section-txt" maxlength="40" list="section-list" placeholder="Block, zone or extension (optional)">
+        <datalist id="section-list"></datalist>
+      </div>
+    </div>
+    <div>
+      <span class="label" id="util-l">Which service?</span>
+      <div class="seg" role="group" aria-labelledby="util-l" id="util">
+        <button type="button" data-v="water" aria-pressed="true">Water</button>
+        <button type="button" data-v="power" aria-pressed="false">Electricity</button>
+      </div>
+    </div>
+    <div>
+      <span class="label" id="status-l">What's the situation?</span>
+      <div class="seg" role="group" aria-labelledby="status-l" id="status"></div>
+    </div>
+    <div class="row2">
+      <div>
+        <label for="eta">Expected back (if announced)</label>
+        <input type="time" id="eta">
+      </div>
+      <div>
+        <label for="note">Note (optional)</label>
+        <input type="text" id="note" maxlength="120" placeholder="e.g. pipe burst near the clinic">
+      </div>
+    </div>
+    <div class="send-row">
+      <button type="button" class="btn primary" id="send">Send report</button>
+      <p class="msg" id="send-msg" role="status"></p>
+    </div>
+  </section>
+
+  <section class="board-wrap" aria-labelledby="board-h">
+    <div class="tools">
+      <h2 id="board-h">Status by area</h2>
+      <div class="seg" role="group" aria-label="Show" id="filter">
+        <button type="button" data-v="problems" aria-pressed="true">Problems only</button>
+        <button type="button" data-v="all" aria-pressed="false">All areas</button>
+      </div>
+    </div>
+    <div class="board" id="board"></div>
+  </section>
+
+  <section class="card" aria-labelledby="feed-h">
+    <h2 id="feed-h">Latest reports</h2>
+    <ul class="feed" id="feed"></ul>
+  </section>
+
+  <section class="card share" aria-labelledby="share-h">
+    <h2 id="share-h">Tell your neighbours</h2>
+    <p class="sub tight">The more people report, the more accurate the board gets.</p>
+    <div class="send-row">
+      <a class="btn wa" id="share-wa" href="#" target="_blank" rel="noopener">Share on WhatsApp</a>
+      <button type="button" class="btn" id="share-copy">Copy link</button>
+      <span class="msg" id="share-msg" role="status"></span>
+    </div>
+  </section>
+
+  <section class="card mod" id="mod" hidden aria-labelledby="mod-h">
+    <h2 id="mod-h">Moderators</h2>
+    <form id="login" class="stack">
+      <div class="row2">
+        <div><label for="m-email">Email</label><input type="email" id="m-email" autocomplete="username" required></div>
+        <div><label for="m-pass">Password</label><input type="password" id="m-pass" autocomplete="current-password" required></div>
+      </div>
+      <div class="send-row">
+        <button type="submit" class="btn dark">Sign in</button>
+        <p class="msg" id="login-msg" role="status"></p>
+      </div>
+    </form>
+    <div id="mod-tools" class="stack" hidden>
+      <p class="sub tight" id="mod-who"></p>
+      <h3>Post an official notice</h3>
+      <div class="row2">
+        <div><label for="n-area">Area</label><select id="n-area"></select></div>
+        <div><label for="n-section">Section (leave empty for whole area)</label><input type="text" id="n-section" maxlength="40" list="n-section-list"><datalist id="n-section-list"></datalist></div>
+      </div>
+      <div class="row2">
+        <div><label for="n-util">Service</label><select id="n-util"><option value="water">Water</option><option value="power">Electricity</option></select></div>
+        <div><label for="n-kind">Type</label><select id="n-kind"><option value="maintenance">Planned maintenance</option><option value="outage">Unplanned outage</option><option value="restored">Supply restored</option></select></div>
+      </div>
+      <div class="row2">
+        <div><label for="n-start">From</label><input type="datetime-local" id="n-start"></div>
+        <div><label for="n-end">Until (expected)</label><input type="datetime-local" id="n-end"></div>
+      </div>
+      <div><label for="n-src">Source</label><input type="text" id="n-src" maxlength="140" placeholder="e.g. Madibeng Municipality Facebook post, 11 Nov"></div>
+      <div class="send-row">
+        <button type="button" class="btn dark" id="n-send">Post notice</button>
+        <button type="button" class="btn" id="signout">Sign out</button>
+        <p class="msg" id="n-msg" role="status"></p>
+      </div>
+      <p class="sub tight">While signed in, you'll see a remove button on every report and notice.</p>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p>Status comes from the most recent report for each area and section in the last 24 hours. Reports older than 12 hours are marked unconfirmed. This is a community board, not an official Madibeng Municipality or Eskom service.</p>
+    <p><a href="#mod" id="mod-link">Moderator sign-in</a></p>
+  </footer>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
