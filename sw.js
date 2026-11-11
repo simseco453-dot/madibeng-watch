@@ -1,6 +1,6 @@
 // Keeps the page shell on the phone so the app opens even on a weak signal.
 // Always tries the network first, so updates show up straight away.
-var CACHE = "mw-shell-v1";
+var CACHE = "mw-shell-v2";
 var SHELL = ["./", "index.html", "style.css", "app.js", "config.js", "manifest.webmanifest", "icons/icon-192.png"];
 
 self.addEventListener("install", function (e) {

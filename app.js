@@ -325,6 +325,10 @@
     $("n-water").textContent = state.loaded || state.example ? count("water") : "–";
     $("n-power").textContent = state.loaded || state.example ? count("power") : "–";
     $("n-reports").textContent = state.loaded || state.example ? res.recent.length : "–";
+    var cw = count("water"), cp = count("power"), cr = res.recent.length;
+    $("l-water").textContent = (cw === 1 ? "place" : "places") + " without water";
+    $("l-power").textContent = (cp === 1 ? "place" : "places") + " without power";
+    $("l-reports").textContent = (cr === 1 ? "report" : "reports") + " in last 24 h";
 
     renderNotices(now);
 
