@@ -159,27 +159,44 @@
     var area = areaSel.value, configured = SECTIONS[area] || [];
     var sel = $("section-sel"), txt = $("section-txt");
     var saved = store("mw-section-" + area) || "";
+    var dl = $("section-list"); dl.textContent = "";
+    knownSections(area).forEach(function (s) { dl.appendChild(new Option(s)); });
     if (configured.length) {
+      var keep = sel.value;
       sel.textContent = "";
       sel.appendChild(new Option("Whole area / not sure", ""));
       configured.forEach(function (s) { sel.appendChild(new Option(s, s)); });
-      sel.value = configured.indexOf(saved) >= 0 ? saved : "";
-      sel.hidden = false; txt.hidden = true;
+      sel.appendChild(new Option("Other (type it)", "__other"));
+      var want = sel.dataset.area === area ? keep : (saved && configured.indexOf(saved) < 0 ? "__other" : saved);
+      sel.value = want;
+      if (sel.value !== want) sel.value = "";
+      if (sel.dataset.area !== area && want === "__other") txt.value = saved;
+      sel.dataset.area = area;
+      sel.hidden = false;
+      txt.hidden = sel.value !== "__other";
+      txt.placeholder = "Type your block, zone or extension";
       $("section-label").setAttribute("for", "section-sel");
     } else {
-      var dl = $("section-list"); dl.textContent = "";
-      knownSections(area).forEach(function (s) { dl.appendChild(new Option(s)); });
-      if (document.activeElement !== txt) txt.value = saved;
+      if (document.activeElement !== txt && sel.dataset.area !== area) txt.value = saved;
+      sel.dataset.area = area;
       sel.hidden = true; txt.hidden = false;
+      txt.placeholder = "Block, zone or extension (optional)";
       $("section-label").setAttribute("for", "section-txt");
     }
   }
   function chosenSection() {
-    return (SECTIONS[areaSel.value] || []).length ? $("section-sel").value : tidySection($("section-txt").value);
+    var sel = $("section-sel");
+    if ((SECTIONS[areaSel.value] || []).length && sel.value !== "__other") return sel.value;
+    return tidySection($("section-txt").value);
   }
 
   areaSel.addEventListener("change", function () { store("mw-area", areaSel.value); drawSectionPicker(); render(); });
-  $("section-sel").addEventListener("change", function () { store("mw-section-" + areaSel.value, chosenSection()); render(); });
+  $("section-sel").addEventListener("change", function () {
+    var other = $("section-sel").value === "__other";
+    $("section-txt").hidden = !other;
+    if (other) { $("section-txt").value = ""; $("section-txt").focus(); }
+    store("mw-section-" + areaSel.value, chosenSection()); render();
+  });
   $("section-txt").addEventListener("change", function () { store("mw-section-" + areaSel.value, chosenSection()); render(); });
 
   function drawStatus() {
